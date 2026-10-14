@@ -1,7 +1,7 @@
 {
   "code": "115794",
   "createdAt": "2026-10-14T19:57:58.143Z",
-  "updatedAt": "2026-10-14T19:57:58.143Z",
+  "updatedAt": "2026-10-14T19:58:12.462Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Arman",
-      "tokenHash": null
+      "tokenHash": "310fd01c3c9daa9b03708d0e57a46ed8de8ea71e4f1f7b7a64199d7794a6cb8d"
     }
   },
   "boards": [
