@@ -1,7 +1,7 @@
 {
   "code": "948900",
   "createdAt": "2026-10-14T19:49:52.206Z",
-  "updatedAt": "2026-10-14T19:49:52.206Z",
+  "updatedAt": "2026-10-14T19:50:18.744Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Idyn",
-      "tokenHash": null
+      "tokenHash": "9a48f1c6a55da6772cf13415b0db120bd5d07e6afaa2469fe294b1e5a6523bea"
     }
   },
   "boards": [
