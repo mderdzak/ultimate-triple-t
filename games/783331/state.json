@@ -1,7 +1,7 @@
 {
   "code": "783331",
   "createdAt": "2026-10-14T20:03:07.985Z",
-  "updatedAt": "2026-10-14T20:04:51.904Z",
+  "updatedAt": "2026-10-14T20:06:13.241Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -14,7 +14,7 @@
   },
   "boards": [
     [
-      null,
+      "X",
       null,
       null,
       null,
@@ -124,9 +124,15 @@
     null,
     null
   ],
-  "nextBoard": null,
-  "turn": "X",
-  "moves": [],
+  "nextBoard": 0,
+  "turn": "O",
+  "moves": [
+    {
+      "player": "X",
+      "board": 0,
+      "cell": 0
+    }
+  ],
   "status": "active",
   "winner": null
 }
