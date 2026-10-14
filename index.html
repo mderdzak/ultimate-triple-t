@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ultimate Triple T</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>#</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="masthead">
+      <h1><button class="link-home" id="home-link" type="button">Ultimate Triple T</button></h1>
+    </header>
+
+    <!-- Home -->
+    <section class="screen" id="screen-home">
+      <p class="lede">Nine boards, one winner. Win three small boards in a row to take the game.</p>
+      <div class="choice">
+        <button class="btn btn-primary btn-big" id="go-start" type="button">Start game</button>
+        <button class="btn btn-big" id="go-join" type="button">Join game</button>
+      </div>
+      <details class="rules">
+        <summary>How to play</summary>
+        <ul>
+          <li>The board is a 3 × 3 grid of nine small tic tac toe boards.</li>
+          <li>The square you play in sends your opponent to the matching small board. Play the top-right square and they must play in the top-right board.</li>
+          <li>If you're sent to a board that's already won or full, you may play in any open board.</li>
+          <li>Win a small board with three in a row and it counts as your square on the big board.</li>
+          <li>Win three small boards in a row to win the game. If no moves are left, it's a draw.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- Start -->
+    <section class="screen" id="screen-start" hidden>
+      <h2>Start a game</h2>
+      <form id="start-form" class="form">
+        <label>Your name
+          <input name="hostName" maxlength="20" autocomplete="nickname" required>
+        </label>
+        <label>Opponent's name
+          <input name="guestName" maxlength="20" required>
+        </label>
+        <p class="hint">You play X and go first. You'll get a 6-digit code to send to your opponent.</p>
+        <p class="error" id="start-error" role="alert"></p>
+        <div class="row">
+          <button class="btn" type="button" data-back>Back</button>
+          <button class="btn btn-primary" type="submit">Create game</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Join -->
+    <section class="screen" id="screen-join" hidden>
+      <h2>Join a game</h2>
+      <form id="join-form" class="form">
+        <label>Game code
+          <input name="code" class="code-input" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="000000" autocomplete="off" required>
+        </label>
+        <p class="error" id="join-error" role="alert"></p>
+        <div class="row">
+          <button class="btn" type="button" data-back>Back</button>
+          <button class="btn btn-primary" type="submit">Join</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Game -->
+    <section class="screen" id="screen-game" hidden>
+      <div class="share" id="share" hidden>
+        <div>
+          <div class="share-label">Send this code to <span id="share-name"></span></div>
+          <div class="share-code" id="share-code"></div>
+        </div>
+        <button class="btn btn-small" id="copy-code" type="button">Copy</button>
+      </div>
+
+      <div class="players">
+        <div class="player" id="player-X"><span class="mark mark-X">X</span><span class="pname"></span></div>
+        <div class="vs">vs</div>
+        <div class="player" id="player-O"><span class="mark mark-O">O</span><span class="pname"></span></div>
+      </div>
+
+      <p class="status" id="status" aria-live="polite"></p>
+
+      <div class="big-board" id="board" role="grid" aria-label="Game board"></div>
+
+      <div class="row actions">
+        <button class="btn" id="clear-move" type="button" disabled>Clear</button>
+        <button class="btn btn-primary" id="submit-move" type="button" disabled>Submit move</button>
+      </div>
+      <p class="error" id="game-error" role="alert"></p>
+
+      <div class="footer-row">
+        <span class="meta" id="meta"></span>
+        <button class="btn btn-small btn-quiet" id="leave" type="button">Leave game</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

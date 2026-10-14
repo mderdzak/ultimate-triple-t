@@ -1,0 +1,17 @@
+name = "ultimate-triple-t"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+GITHUB_REPO = "mderdzak/ultimate-triple-t"
+GITHUB_BRANCH = "game-data"
+# localhost is always allowed; add other site origins here, comma separated
+ALLOWED_ORIGINS = "https://mderdzak.github.io"
+
+# Hourly cleanup of finished or abandoned games
+[triggers]
+crons = ["0 * * * *"]
+
+# The GitHub token is a secret, never put it in this file:
+#   npx wrangler secret put GITHUB_TOKEN
+# For local development, put GITHUB_TOKEN=... in worker/.dev.vars (gitignored).
