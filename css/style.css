@@ -289,39 +289,36 @@ h2 { margin: 0 0 16px; font-size: 22px; }
   left: 12px;
   bottom: 12px;
   z-index: 2147483647;
-  display: flex;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--surface);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
-}
-.theme-toggle button {
-  font: 600 13px/1.2 system-ui, sans-serif;
-  padding: 7px 11px;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--bg);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
   cursor: pointer;
 }
-.theme-toggle button[aria-pressed="true"] {
-  background: var(--primary);
-  color: var(--primary-ink);
-}
+.theme-toggle svg { width: 20px; height: 20px; display: none; }
+.theme-toggle[data-state="light"] .icon-sun,
+.theme-toggle[data-state="dark"] .icon-moon,
+.theme-toggle[data-state="system"] .icon-gear { display: block; }
 
 .credit {
   position: fixed;
   left: 50%;
-  bottom: 14px;
+  bottom: 12px;
   transform: translateX(-50%);
   margin: 0;
   font-size: 11px;
+  line-height: 36px;
   color: var(--muted);
   white-space: nowrap;
   pointer-events: none;
 }
 body { padding-bottom: 64px; }
-@media (max-width: 560px) {
-  .credit { bottom: 56px; }
-  body { padding-bottom: 90px; }
+@media (max-width: 400px) {
+  .credit { font-size: 10px; }
 }

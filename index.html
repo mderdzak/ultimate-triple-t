@@ -108,23 +108,28 @@
   <a id="feedback-fab" href="https://forms.gle/Hr88gu3oVYAp1Anb8" target="_blank" rel="noopener noreferrer"
      style="position:fixed;right:12px;bottom:12px;z-index:2147483647;padding:8px 14px;border-radius:999px;background:#222;color:#fff;font:600 14px/1.2 system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.4)">Feedback</a>
 
-  <div class="theme-toggle" id="theme-toggle" role="group" aria-label="Color theme">
-    <button type="button" data-theme-choice="light">Light</button>
-    <button type="button" data-theme-choice="system">System</button>
-    <button type="button" data-theme-choice="dark">Dark</button>
-  </div>
+  <button class="theme-toggle" id="theme-toggle" type="button" data-state="system">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>
+    <svg class="icon-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/><circle cx="12" cy="12" r="6.5"/></svg>
+  </button>
   <script>
     (function () {
-      var root = document.documentElement, btns = document.querySelectorAll("[data-theme-choice]");
+      var root = document.documentElement, btn = document.getElementById("theme-toggle");
+      var labels = { light: "Light mode", dark: "Dark mode", system: "System theme" };
+      var next = { system: "light", light: "dark", dark: "system" };
       function current() { return root.dataset.theme || "system"; }
-      function render() { btns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.themeChoice === current())); }); }
-      btns.forEach(function (b) {
-        b.addEventListener("click", function () {
-          var c = b.dataset.themeChoice;
-          if (c === "system") delete root.dataset.theme; else root.dataset.theme = c;
-          try { if (c === "system") localStorage.removeItem("theme"); else localStorage.setItem("theme", c); } catch (e) {}
-          render();
-        });
+      function render() {
+        var s = current();
+        btn.dataset.state = s;
+        btn.setAttribute("aria-label", labels[s] + " (click to change)");
+        btn.title = labels[s];
+      }
+      btn.addEventListener("click", function () {
+        var c = next[current()];
+        if (c === "system") delete root.dataset.theme; else root.dataset.theme = c;
+        try { if (c === "system") localStorage.removeItem("theme"); else localStorage.setItem("theme", c); } catch (e) {}
+        render();
       });
       render();
     })();
