@@ -310,8 +310,7 @@ h2 { margin: 0 0 16px; font-size: 22px; }
 }
 .theme-toggle svg { width: 20px; height: 20px; flex: none; display: none; }
 .theme-toggle[data-state="light"] .icon-sun,
-.theme-toggle[data-state="dark"] .icon-moon,
-.theme-toggle[data-state="system"] .icon-gear { display: block; }
+.theme-toggle[data-state="dark"] .icon-moon { display: block; }
 
 .credit {
   position: fixed;
