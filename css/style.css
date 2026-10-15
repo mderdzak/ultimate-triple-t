@@ -301,7 +301,7 @@ h2 { margin: 0 0 16px; font-size: 22px; }
   overflow: visible;
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid var(--bg);
+  border: 0;
   border-radius: 50%;
   background: var(--ink);
   color: var(--bg);
