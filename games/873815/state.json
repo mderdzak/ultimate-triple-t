@@ -1,7 +1,7 @@
 {
   "code": "873815",
   "createdAt": "2026-10-15T13:57:52.824Z",
-  "updatedAt": "2026-10-15T14:05:37.765Z",
+  "updatedAt": "2026-10-15T14:05:48.007Z",
   "players": {
     "X": {
       "name": "Justin",
@@ -106,7 +106,7 @@
       null,
       "X",
       null,
-      null,
+      "X",
       null,
       null,
       null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 8,
-  "turn": "X",
+  "nextBoard": 4,
+  "turn": "O",
   "moves": [
     {
       "player": "X",
@@ -236,6 +236,11 @@
       "player": "O",
       "board": 6,
       "cell": 8
+    },
+    {
+      "player": "X",
+      "board": 8,
+      "cell": 4
     }
   ],
   "status": "active",
