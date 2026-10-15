@@ -1,0 +1,132 @@
+{
+  "code": "296352",
+  "createdAt": "2026-10-15T19:29:16.430Z",
+  "updatedAt": "2026-10-15T19:29:16.430Z",
+  "players": {
+    "X": {
+      "name": "Michael",
+      "tokenHash": "3aab5efbeac3f7c29bafe3127b8d06ba00b9ebc5899cc40287a26d83b7270d73"
+    },
+    "O": {
+      "name": "Papa",
+      "tokenHash": null
+    }
+  },
+  "boards": [
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "boardWinners": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "nextBoard": null,
+  "turn": "X",
+  "moves": [],
+  "status": "active",
+  "winner": null
+}
