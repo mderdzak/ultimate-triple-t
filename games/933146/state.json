@@ -1,7 +1,7 @@
 {
   "code": "933146",
   "createdAt": "2026-10-15T14:24:46.749Z",
-  "updatedAt": "2026-10-15T14:30:09.618Z",
+  "updatedAt": "2026-10-15T14:30:27.070Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -41,7 +41,7 @@
       "X",
       null,
       "O",
-      null,
+      "X",
       "X",
       null,
       "X"
@@ -116,7 +116,7 @@
   "boardWinners": [
     "X",
     null,
-    null,
+    "X",
     null,
     null,
     null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": null,
-  "turn": "X",
+  "nextBoard": 5,
+  "turn": "O",
   "moves": [
     {
       "player": "X",
@@ -216,6 +216,11 @@
       "player": "O",
       "board": 5,
       "cell": 0
+    },
+    {
+      "player": "X",
+      "board": 2,
+      "cell": 5
     }
   ],
   "status": "active",
