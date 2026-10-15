@@ -1,7 +1,7 @@
 {
   "code": "703513",
   "createdAt": "2026-10-15T00:34:09.679Z",
-  "updatedAt": "2026-10-15T00:34:09.679Z",
+  "updatedAt": "2026-10-15T00:41:11.227Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -14,7 +14,7 @@
   },
   "boards": [
     [
-      null,
+      "X",
       null,
       null,
       null,
@@ -124,9 +124,15 @@
     null,
     null
   ],
-  "nextBoard": null,
-  "turn": "X",
-  "moves": [],
+  "nextBoard": 0,
+  "turn": "O",
+  "moves": [
+    {
+      "player": "X",
+      "board": 0,
+      "cell": 0
+    }
+  ],
   "status": "active",
   "winner": null
 }
