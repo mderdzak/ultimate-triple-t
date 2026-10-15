@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ultimate Triple T</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>#</text></svg>">
+  <script>
+    try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -101,6 +104,28 @@
 
   <a id="feedback-fab" href="https://forms.gle/Hr88gu3oVYAp1Anb8" target="_blank" rel="noopener noreferrer"
      style="position:fixed;right:12px;bottom:12px;z-index:2147483647;padding:8px 14px;border-radius:999px;background:#222;color:#fff;font:600 14px/1.2 system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.4)">Feedback</a>
+
+  <div class="theme-toggle" id="theme-toggle" role="group" aria-label="Color theme">
+    <button type="button" data-theme-choice="light">Light</button>
+    <button type="button" data-theme-choice="system">System</button>
+    <button type="button" data-theme-choice="dark">Dark</button>
+  </div>
+  <script>
+    (function () {
+      var root = document.documentElement, btns = document.querySelectorAll("[data-theme-choice]");
+      function current() { return root.dataset.theme || "system"; }
+      function render() { btns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.themeChoice === current())); }); }
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          var c = b.dataset.themeChoice;
+          if (c === "system") delete root.dataset.theme; else root.dataset.theme = c;
+          try { if (c === "system") localStorage.removeItem("theme"); else localStorage.setItem("theme", c); } catch (e) {}
+          render();
+        });
+      });
+      render();
+    })();
+  </script>
 
   <script type="module" src="js/app.js"></script>
 </body>
