@@ -1,7 +1,7 @@
 {
   "code": "873815",
   "createdAt": "2026-10-15T13:57:52.824Z",
-  "updatedAt": "2026-10-15T13:57:52.824Z",
+  "updatedAt": "2026-10-15T13:57:58.559Z",
   "players": {
     "X": {
       "name": "Justin",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Michael",
-      "tokenHash": null
+      "tokenHash": "9393ae8810ae8985b14bc5216b21d7ab4c200bf01c4b3acbf12a3d7c731b3f79"
     }
   },
   "boards": [
