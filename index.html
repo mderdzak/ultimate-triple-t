@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ultimate Triple T</title>
+  <title>Iltinate Tic Tac Toe</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>#</text></svg>">
   <script>
     try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
@@ -13,7 +13,7 @@
 <body>
   <main class="app">
     <header class="masthead">
-      <h1><button class="link-home" id="home-link" type="button">Ultimate Triple T</button></h1>
+      <h1><button class="link-home" id="home-link" type="button">Iltinate Tic Tac Toe</button></h1>
     </header>
 
     <!-- Home -->
@@ -23,16 +23,6 @@
         <button class="btn btn-primary btn-big" id="go-start" type="button">Start game</button>
         <button class="btn btn-big" id="go-join" type="button">Join game</button>
       </div>
-      <details class="rules">
-        <summary>How to play</summary>
-        <ul>
-          <li>The board is a 3 × 3 grid of nine small tic tac toe boards.</li>
-          <li>The square you play in sends your opponent to the matching small board. Play the top-right square and they must play in the top-right board.</li>
-          <li>If you're sent to a board that's already won or full, you may play in any open board.</li>
-          <li>Win a small board with three in a row and it counts as your square on the big board.</li>
-          <li>Win three small boards in a row to win the game. If no moves are left, it's a draw.</li>
-        </ul>
-      </details>
     </section>
 
     <!-- Start -->
@@ -100,7 +90,20 @@
         <button class="btn btn-small btn-quiet" id="leave" type="button">Leave game</button>
       </div>
     </section>
+
+    <details class="rules">
+      <summary>How to play</summary>
+      <ul>
+        <li>The board is a 3 × 3 grid of nine small tic tac toe boards.</li>
+        <li>The square you play in sends your opponent to the matching small board. Play the top-right square and they must play in the top-right board.</li>
+        <li>If you're sent to a board that's already won or full, you may play in any open board.</li>
+        <li>Win a small board with three in a row and it counts as your square on the big board.</li>
+        <li>Win three small boards in a row to win the game. If no moves are left, it's a draw.</li>
+      </ul>
+    </details>
   </main>
+
+  <p class="credit">Made by Michael Derdzakyan</p>
 
   <a id="feedback-fab" href="https://forms.gle/Hr88gu3oVYAp1Anb8" target="_blank" rel="noopener noreferrer"
      style="position:fixed;right:12px;bottom:12px;z-index:2147483647;padding:8px 14px;border-radius:999px;background:#222;color:#fff;font:600 14px/1.2 system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.4)">Feedback</a>
