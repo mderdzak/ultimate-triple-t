@@ -1,7 +1,7 @@
 {
   "code": "991962",
   "createdAt": "2026-10-15T11:44:13.816Z",
-  "updatedAt": "2026-10-15T11:45:03.387Z",
+  "updatedAt": "2026-10-15T11:45:17.530Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -60,7 +60,7 @@
     [
       null,
       null,
-      null,
+      "X",
       null,
       null,
       null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 4,
-  "turn": "X",
+  "nextBoard": 2,
+  "turn": "O",
   "moves": [
     {
       "player": "X",
@@ -136,6 +136,11 @@
       "player": "O",
       "board": 0,
       "cell": 4
+    },
+    {
+      "player": "X",
+      "board": 4,
+      "cell": 2
     }
   ],
   "status": "active",
