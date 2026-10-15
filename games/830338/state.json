@@ -1,7 +1,7 @@
 {
   "code": "830338",
   "createdAt": "2026-10-15T19:26:58.016Z",
-  "updatedAt": "2026-10-15T19:26:58.016Z",
+  "updatedAt": "2026-10-15T19:27:17.100Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Arman",
-      "tokenHash": null
+      "tokenHash": "30a85fb96ad2adac6f2162ccdc43e10ae9eaeae6a64b2c370d1944d1a078e795"
     }
   },
   "boards": [
