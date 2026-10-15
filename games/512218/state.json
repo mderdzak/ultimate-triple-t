@@ -1,7 +1,7 @@
 {
   "code": "512218",
   "createdAt": "2026-10-15T13:42:36.507Z",
-  "updatedAt": "2026-10-15T13:46:18.868Z",
+  "updatedAt": "2026-10-15T13:46:30.270Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -49,7 +49,7 @@
     [
       null,
       null,
-      null,
+      "O",
       "X",
       "O",
       null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 3,
-  "turn": "O",
+  "nextBoard": 2,
+  "turn": "X",
   "moves": [
     {
       "player": "X",
@@ -231,6 +231,11 @@
       "player": "X",
       "board": 6,
       "cell": 3
+    },
+    {
+      "player": "O",
+      "board": 3,
+      "cell": 2
     }
   ],
   "status": "active",
