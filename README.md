@@ -1,4 +1,4 @@
-# Iltinate Tic Tac Toe
+# Ultimate Tic Tac Toe
 
 Play Ultimate Tic Tac Toe with a friend in the browser. One player starts a game and gets a 6-digit code, and the other joins with it.
 
