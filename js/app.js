@@ -413,19 +413,24 @@ function renderChat() {
     empty.textContent = 'Say hi to your opponent.';
     log.append(empty);
   }
-  for (const m of all) {
+  all.forEach((m, i) => {
     const mine = session && m.from === session.role;
+    // Consecutive messages from the same person share one name label.
+    const continued = i > 0 && all[i - 1].from === m.from;
     const li = document.createElement('li');
-    li.className = `msg from-${m.from}${mine ? ' mine' : ''}${m.pending ? ' sending' : ''}`;
-    const name = document.createElement('div');
-    name.className = 'msg-name';
-    name.textContent = state ? state.players[m.from].name : m.from;
+    li.className = `msg from-${m.from}${mine ? ' mine' : ''}${m.pending ? ' sending' : ''}${continued ? ' continued' : ''}`;
+    if (!continued) {
+      const name = document.createElement('div');
+      name.className = 'msg-name';
+      name.textContent = state ? state.players[m.from].name : m.from;
+      li.append(name);
+    }
     const text = document.createElement('p');
     text.className = 'msg-text';
     text.textContent = m.text;
-    li.append(name, text);
+    li.append(text);
     log.append(li);
-  }
+  });
   if (nearBottom || waiting.length || lastId === 0) log.scrollTop = log.scrollHeight;
   else log.scrollTop = previousTop;
 

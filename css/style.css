@@ -475,3 +475,6 @@ body { padding-bottom: 64px; }
   .app.in-game .chat-title { font-size: 18px; }
   .app.in-game .chat-form input { padding: 11px 12px; font-size: 15px; }
 }
+
+/* Grouped chat messages sit closer together. */
+.msg.continued { margin-top: -5px; }
