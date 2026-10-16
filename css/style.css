@@ -412,6 +412,7 @@ body { padding-bottom: 64px; }
 }
 .chat-form input:focus { outline: none; border-color: var(--line-strong); }
 .chat-form input:disabled { opacity: 0.5; }
+.chat-note { margin: 6px 0 0; font-size: 11px; line-height: 1.4; color: var(--muted); }
 
 /* ---------- Wide screens: how-to | board | chat, all on one screen ---------- */
 @media (min-width: 1000px) {

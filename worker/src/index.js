@@ -12,10 +12,14 @@
 //   POST   /games/:code/join                           -> { token, role: 'O', state }
 //   POST   /games/:code/move   { token, board, cell }  -> { state }
 //   POST   /games/:code/chat   { token, text }         -> { chat }
-//   DELETE /games/:code        { token }               -> { deleted: true }  (finished games only)
+//   DELETE /games/:code        { token }               -> { deleted: true }  (a player leaving, or a finished game)
 //
 // Chat lives in games/<code>/chat.json on its own branch (GITHUB_CHAT_BRANCH), so a
 // chat message can never collide with a move being committed to the game branch.
+//
+// Nothing is kept once a game is over: the chat is deleted by the move that ends the
+// game, the board as soon as the other player has seen the result, and both right away
+// when a player leaves.
 //
 // Polling is cheap: the page sends back the `v` tag from its last reply, the worker
 // asks GitHub "has this changed?" with conditional requests, and GitHub answers
@@ -23,7 +27,7 @@
 
 import { newBoardState, applyMove } from '../../js/game.js';
 
-const FINISHED_GAME_TTL_MS = 60 * 60 * 1000;          // cron removes finished games after 1 hour
+const FINISHED_GAME_TTL_MS = 10 * 60 * 1000;          // cron removes finished games after 10 minutes
 const STALE_GAME_TTL_MS = 7 * 24 * 60 * 60 * 1000;    // ...and abandoned games after 7 days
 const MAX_NAME_LENGTH = 20;
 const MAX_CHAT_LENGTH = 500;
@@ -125,8 +129,11 @@ async function route(request, env) {
     if (!file) throw new HttpError(404, 'No game with that code');
 
     // First look at this game's chat: create an empty file so later polls can be 304s.
+    // A finished game's chat has already been deleted, so don't bring it back.
     let chat = chatFile;
-    if (chat === 'missing') {
+    if (chat === 'missing' && (file.notModified || file.data.status !== 'active')) {
+      chat = null;
+    } else if (chat === 'missing') {
       await chatGh.write(`games/${code}/chat.json`, { messages: [] }, null, `Game ${code}: open chat`).catch(() => {});
       chat = { data: { messages: [] }, etag: '' };
     }
@@ -173,6 +180,9 @@ async function route(request, env) {
 
     const who = state.players[role].name;
     await saveOrConflict(gh, path, next, file.sha, `Game ${code}: ${who} (${role}) plays board ${body.board + 1}, square ${body.cell + 1}`);
+    // Chat closes when the game ends, so it can go now. The board stays until the
+    // other player has seen the result (they delete it), or the cron does.
+    if (next.status === 'finished') await removeChat(chatGh, code);
     return json({ state: publicState(next) });
   }
 
@@ -202,14 +212,17 @@ async function route(request, env) {
     throw new HttpError(409, 'Chat is busy, try sending again');
   }
 
-  // DELETE /games/:code — remove a finished game's folder
+  // DELETE /games/:code — a player left, or the game is over: remove the board and chat
   if (parts.length === 2 && request.method === 'DELETE') {
     const body = await readJson(request);
     const file = await gh.read(path);
-    if (!file) return json({ deleted: true }); // already gone
-    await roleForToken(file.data, body.token);
-    if (file.data.status !== 'finished') throw new HttpError(409, 'Only finished games can be deleted');
-    await gh.remove(path, file.sha, `Game ${code} finished, removing folder`);
+    if (!file) {
+      await removeChat(chatGh, code); // board already gone; make sure the chat is too
+      return json({ deleted: true });
+    }
+    const role = await roleForToken(file.data, body.token);
+    const why = file.data.status === 'finished' ? 'finished' : `${file.data.players[role].name} left`;
+    await gh.remove(path, file.sha, `Game ${code} ${why}, removing folder`);
     await removeChat(chatGh, code);
     return json({ deleted: true });
   }
@@ -249,7 +262,7 @@ async function removeChat(chatGh, code) {
   try {
     const path = `games/${code}/chat.json`;
     const file = await chatGh.read(path);
-    if (file) await chatGh.remove(path, file.sha, `Game ${code} finished, removing chat`);
+    if (file) await chatGh.remove(path, file.sha, `Game ${code} over, removing chat`);
   } catch {
     // The cron sweep picks up anything left behind.
   }

@@ -112,7 +112,10 @@ $('#home-link').addEventListener('click', () => { if (!session) show('home'); })
 for (const b of document.querySelectorAll('[data-back]')) b.addEventListener('click', () => show('home'));
 
 $('#leave').addEventListener('click', () => {
-  if (state?.status === 'active' && !confirm("Leave this game? You won't be able to rejoin it.")) return;
+  if (state?.status === 'active') {
+    if (!confirm('Leave this game? It will be deleted for both players, along with the chat.')) return;
+    api.deleteGame(session.code, session.token).catch(() => {});
+  }
   goHome();
 });
 
@@ -210,8 +213,10 @@ async function poll() {
     }
   } catch (err) {
     if (err.status === 404) {
-      $('#status').textContent = 'This game no longer exists.';
+      // The other player left (which deletes the game), or it expired.
+      state.status = 'gone';
       clearSession();
+      render();
       keepGoing = false;
     } else {
       $('#game-error').textContent = `${err.message} Retrying…`;
@@ -311,6 +316,7 @@ function render() {
 
 function statusText(me, them, myTurn) {
   const themName = state.players[them].name;
+  if (state.status === 'gone') return `${themName} left, so the game and chat were deleted.`;
   if (state.status === 'finished') {
     if (state.winner === 'draw') return "It's a draw. No moves left.";
     return state.winner === me ? 'You win! 🎉' : `${state.players[state.winner].name} wins.`;
