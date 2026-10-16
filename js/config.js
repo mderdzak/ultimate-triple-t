@@ -7,5 +7,8 @@ const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
 
 export const RELAY_URL = isLocal ? 'http://localhost:8787' : DEPLOYED_RELAY_URL;
 
-// How often the waiting player checks for the opponent's move.
-export const POLL_INTERVAL_MS = 5000;
+// How often each player checks for the opponent's move and new chat messages.
+// Checks are cheap (GitHub answers "not modified" for free), so this can be short.
+export const POLL_INTERVAL_MS = 2000;
+// ...and how often while the tab is in the background.
+export const HIDDEN_POLL_INTERVAL_MS = 8000;

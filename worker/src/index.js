@@ -8,16 +8,26 @@
 //
 // Routes:
 //   POST   /games              { hostName, guestName } -> { code, token, role: 'X', state }
-//   GET    /games/:code                                -> { state }
+//   GET    /games/:code?v=<tag>                        -> { state?, chat?, v } or { unchanged: true, v }
 //   POST   /games/:code/join                           -> { token, role: 'O', state }
 //   POST   /games/:code/move   { token, board, cell }  -> { state }
+//   POST   /games/:code/chat   { token, text }         -> { chat }
 //   DELETE /games/:code        { token }               -> { deleted: true }  (finished games only)
+//
+// Chat lives in games/<code>/chat.json on its own branch (GITHUB_CHAT_BRANCH), so a
+// chat message can never collide with a move being committed to the game branch.
+//
+// Polling is cheap: the page sends back the `v` tag from its last reply, the worker
+// asks GitHub "has this changed?" with conditional requests, and GitHub answers
+// "304 Not Modified" without counting it against the hourly rate limit.
 
 import { newBoardState, applyMove } from '../../js/game.js';
 
 const FINISHED_GAME_TTL_MS = 60 * 60 * 1000;          // cron removes finished games after 1 hour
 const STALE_GAME_TTL_MS = 7 * 24 * 60 * 60 * 1000;    // ...and abandoned games after 7 days
 const MAX_NAME_LENGTH = 20;
+const MAX_CHAT_LENGTH = 500;
+const MAX_CHAT_MESSAGES = 100;
 
 export default {
   async fetch(request, env) {
@@ -39,6 +49,7 @@ export default {
   // Runs on the cron in wrangler.toml: removes games nobody will clean up.
   async scheduled(_event, env) {
     const gh = github(env);
+    const chatGh = github(env, chatBranch(env));
     const dirs = await gh.list('games');
     const now = Date.now();
     for (const dir of dirs) {
@@ -49,7 +60,14 @@ export default {
       const expired = file.data.status === 'finished' ? age > FINISHED_GAME_TTL_MS : age > STALE_GAME_TTL_MS;
       if (expired) {
         await gh.remove(`games/${dir.name}/state.json`, file.sha, `Clean up game ${dir.name}`);
+        await removeChat(chatGh, dir.name);
       }
+    }
+
+    // Chat files whose game is already gone.
+    for (const dir of await chatGh.list('games').catch(() => [])) {
+      if (dir.type !== 'dir') continue;
+      if (!(await gh.read(`games/${dir.name}/state.json`))) await removeChat(chatGh, dir.name);
     }
   },
 };
@@ -58,6 +76,7 @@ async function route(request, env) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/').filter(Boolean);
   const gh = github(env);
+  const chatGh = github(env, chatBranch(env));
 
   if (parts[0] !== 'games') throw new HttpError(404, 'Not found');
 
@@ -96,11 +115,27 @@ async function route(request, env) {
   if (!/^\d{6}$/.test(code || '')) throw new HttpError(400, 'Game codes are 6 digits');
   const path = `games/${code}/state.json`;
 
-  // GET /games/:code — current state (used for polling)
+  // GET /games/:code — current state and chat (used for polling)
   if (parts.length === 2 && request.method === 'GET') {
-    const file = await gh.read(path);
+    const [stateTag, chatTag = ''] = (url.searchParams.get('v') || '').split('|');
+    const [file, chatFile] = await Promise.all([
+      gh.read(path, stateTag || undefined),
+      readChat(chatGh, code, chatTag || undefined),
+    ]);
     if (!file) throw new HttpError(404, 'No game with that code');
-    return json({ state: publicState(file.data) });
+
+    // First look at this game's chat: create an empty file so later polls can be 304s.
+    let chat = chatFile;
+    if (chat === 'missing') {
+      await chatGh.write(`games/${code}/chat.json`, { messages: [] }, null, `Game ${code}: open chat`).catch(() => {});
+      chat = { data: { messages: [] }, etag: '' };
+    }
+
+    const out = { v: `${file.etag || stateTag || ''}|${(chat && chat.etag) || chatTag}` };
+    if (file.notModified && (!chat || chat.notModified)) return json({ unchanged: true, v: out.v });
+    if (!file.notModified) out.state = publicState(file.data);
+    if (chat && !chat.notModified) out.chat = chat.data.messages;
+    return json(out);
   }
 
   // POST /games/:code/join — second player joins
@@ -141,6 +176,32 @@ async function route(request, env) {
     return json({ state: publicState(next) });
   }
 
+  // POST /games/:code/chat — send a chat message
+  if (parts.length === 3 && parts[2] === 'chat' && request.method === 'POST') {
+    const body = await readJson(request);
+    const file = await gh.read(path);
+    if (!file) throw new HttpError(404, 'No game with that code');
+    const role = await roleForToken(file.data, body.token);
+    if (file.data.status !== 'active') throw new HttpError(409, 'The game is over');
+    const text = cleanMessage(body.text);
+
+    // Only other chat messages can race with this write, so just re-read and retry.
+    const chatPath = `games/${code}/chat.json`;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const chat = await chatGh.read(chatPath);
+      const data = chat ? chat.data : { messages: [] };
+      const last = data.messages[data.messages.length - 1];
+      data.messages.push({ id: (last ? last.id : 0) + 1, from: role, text, at: new Date().toISOString() });
+      if (data.messages.length > MAX_CHAT_MESSAGES) data.messages.splice(0, data.messages.length - MAX_CHAT_MESSAGES);
+      const who = file.data.players[role].name;
+      if (await chatGh.write(chatPath, data, chat ? chat.sha : null, `Game ${code}: ${who} chats`)) {
+        return json({ chat: data.messages });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+    }
+    throw new HttpError(409, 'Chat is busy, try sending again');
+  }
+
   // DELETE /games/:code — remove a finished game's folder
   if (parts.length === 2 && request.method === 'DELETE') {
     const body = await readJson(request);
@@ -149,6 +210,7 @@ async function route(request, env) {
     await roleForToken(file.data, body.token);
     if (file.data.status !== 'finished') throw new HttpError(409, 'Only finished games can be deleted');
     await gh.remove(path, file.sha, `Game ${code} finished, removing folder`);
+    await removeChat(chatGh, code);
     return json({ deleted: true });
   }
 
@@ -167,6 +229,37 @@ class HttpError extends Error {
 async function saveOrConflict(gh, path, data, sha, message) {
   const ok = await gh.write(path, data, sha, message);
   if (!ok) throw new HttpError(409, 'The game changed at the same time, refresh and try again');
+}
+
+function chatBranch(env) {
+  return env.GITHUB_CHAT_BRANCH || 'game-chat';
+}
+
+// Chat is a nice-to-have: if it can't be read, the game keeps working without it.
+// -> file | { notModified } | 'missing' | null (chat unavailable)
+async function readChat(chatGh, code, tag) {
+  try {
+    return (await chatGh.read(`games/${code}/chat.json`, tag)) || 'missing';
+  } catch {
+    return null;
+  }
+}
+
+async function removeChat(chatGh, code) {
+  try {
+    const path = `games/${code}/chat.json`;
+    const file = await chatGh.read(path);
+    if (file) await chatGh.remove(path, file.sha, `Game ${code} finished, removing chat`);
+  } catch {
+    // The cron sweep picks up anything left behind.
+  }
+}
+
+function cleanMessage(value) {
+  const text = typeof value === 'string' ? value.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').trim() : '';
+  if (!text) throw new HttpError(400, 'Type a message first');
+  if (text.length > MAX_CHAT_LENGTH) throw new HttpError(400, `Messages can be at most ${MAX_CHAT_LENGTH} characters`);
+  return text;
 }
 
 async function roleForToken(state, token) {
@@ -250,11 +343,11 @@ function fromBase64(b64) {
 }
 
 // Minimal GitHub "contents" API client.
-function github(env) {
+function github(env, branchName) {
   if (!env.GITHUB_TOKEN) throw new HttpError(500, 'Worker is missing its GITHUB_TOKEN secret');
   const api = env.GITHUB_API_URL || 'https://api.github.com';
   const base = `${api}/repos/${env.GITHUB_REPO}/contents/`;
-  const branch = env.GITHUB_BRANCH || 'game-data';
+  const branch = branchName || env.GITHUB_BRANCH || 'game-data';
   const headers = {
     'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
     'Accept': 'application/vnd.github+json',
@@ -272,13 +365,18 @@ function github(env) {
   }
 
   return {
-    // -> { data, sha } or null if missing
-    async read(path) {
-      const res = await call(`${path}?ref=${encodeURIComponent(branch)}`, { cache: 'no-store' });
+    // -> { data, sha, etag }, null if missing, or { notModified: true } when `etag`
+    // (from an earlier read) still matches. GitHub doesn't count 304s against the rate limit.
+    async read(path, etag) {
+      const res = await call(`${path}?ref=${encodeURIComponent(branch)}`, {
+        cache: 'no-store',
+        headers: etag ? { 'If-None-Match': etag } : {},
+      });
+      if (res.status === 304) return { notModified: true };
       if (res.status === 404) return null;
       if (!res.ok) throw new HttpError(502, `GitHub read failed (${res.status})`);
       const file = await res.json();
-      return { data: JSON.parse(fromBase64(file.content)), sha: file.sha };
+      return { data: JSON.parse(fromBase64(file.content)), sha: file.sha, etag: res.headers.get('etag') || '' };
     },
 
     // sha = null means "create; fail if it exists". Returns false on a conflict.

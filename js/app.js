@@ -1,8 +1,9 @@
 import { playableBoards, isLegalMove, winningLine } from './game.js';
-import { POLL_INTERVAL_MS } from './config.js';
+import { POLL_INTERVAL_MS, HIDDEN_POLL_INTERVAL_MS } from './config.js';
 import * as api from './api.js';
 
 const SESSION_KEY = 'utt-session';
+const BASE_TITLE = document.title;
 
 // Current game, if any.
 let session = null;   // { code, token, role }
@@ -10,7 +11,15 @@ let state = null;     // public game state from the server
 let pending = null;   // { board, cell } selected but not yet submitted
 let busy = false;     // a submit is in flight
 let pollTimer = null;
+let polling = false;  // a poll request is in flight
+let syncTag = '';     // `v` from the last poll reply, so unchanged polls are cheap
 let lastChecked = null;
+
+// Chat
+let chat = [];        // messages from the server
+let outbox = [];      // messages I've sent that the server hasn't confirmed yet
+let unread = 0;       // opponent messages that arrived while the tab was hidden
+let localId = 0;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -20,6 +29,7 @@ function show(name) {
   for (const el of document.querySelectorAll('.screen')) {
     el.hidden = el.id !== `screen-${name}`;
   }
+  document.querySelector('.app').classList.toggle('in-game', name === 'game');
 }
 
 function goHome() {
@@ -27,6 +37,9 @@ function goHome() {
   session = null;
   state = null;
   pending = null;
+  chat = [];
+  outbox = [];
+  syncTag = '';
   clearSession();
   show('home');
 }
@@ -116,10 +129,14 @@ function enterGame(newSession, newState) {
   session = newSession;
   state = newState;
   pending = null;
+  chat = [];
+  outbox = [];
+  syncTag = '';
   saveSession();
   show('game');
   render();
-  schedulePolling();
+  renderChat();
+  schedulePolling(0);
 }
 
 function isMyTurn() {
@@ -130,17 +147,19 @@ function opponentRole() {
   return session.role === 'X' ? 'O' : 'X';
 }
 
-// The waiting player checks GitHub (via the relay) every 5 seconds.
-// The host also checks while waiting for the opponent to join.
+// Both players check GitHub (via the relay) every couple of seconds while the game
+// is active: the waiting player for the opponent's move (or for them to join), and
+// both of them for chat messages.
 function needsPolling() {
   if (!state) return false;
-  if (state.status !== 'active') return false;
-  return !isMyTurn() || !state.players.O.joined;
+  return state.status === 'active';
 }
 
-function schedulePolling() {
+function schedulePolling(delay) {
   stopPolling();
-  if (needsPolling()) pollTimer = setTimeout(poll, POLL_INTERVAL_MS);
+  if (polling || !needsPolling()) return; // an in-flight poll reschedules itself
+  const wait = delay ?? (document.hidden ? HIDDEN_POLL_INTERVAL_MS : POLL_INTERVAL_MS);
+  pollTimer = setTimeout(poll, wait);
 }
 
 function stopPolling() {
@@ -148,33 +167,65 @@ function stopPolling() {
   pollTimer = null;
 }
 
+// Apply a poll reply: { unchanged } or { state?, chat?, v }.
+function applyPoll(res) {
+  if (res.unchanged) {
+    syncTag = res.v;
+    renderMeta();
+    return;
+  }
+  let stateChanged = false;
+  if (res.state) {
+    // Ignore a reply that is older than what we already have (sent before our own move landed).
+    if (res.state.moves.length < state.moves.length) return;
+    stateChanged = JSON.stringify(res.state) !== JSON.stringify(state);
+    state = res.state;
+  }
+  if (res.chat) mergeChat(res.chat);
+  syncTag = res.v;
+  if (stateChanged) render(); else renderMeta();
+}
+
 async function poll() {
   pollTimer = null;
   if (!session) return;
+  polling = true;
+  let keepGoing = true;
   try {
-    const { state: s } = await api.getGame(session.code);
+    const res = await api.getGame(session.code, syncTag);
+    if (!session) return;
     lastChecked = new Date();
     $('#game-error').textContent = '';
-    const changed = JSON.stringify(s) !== JSON.stringify(state);
-    state = s;
-    if (changed) render(); else renderMeta();
+    applyPoll(res);
 
     // We watched the game end: we're the last one who needs the folder, so remove it.
     if (state.status === 'finished') {
       api.deleteGame(session.code, session.token).catch(() => {});
       clearSession();
-      return;
+      renderChat();
+      keepGoing = false;
     }
   } catch (err) {
     if (err.status === 404) {
       $('#status').textContent = 'This game no longer exists.';
       clearSession();
-      return;
+      keepGoing = false;
+    } else {
+      $('#game-error').textContent = `${err.message} Retrying…`;
     }
-    $('#game-error').textContent = `${err.message} Retrying…`;
+  } finally {
+    polling = false;
   }
-  schedulePolling();
+  if (keepGoing) schedulePolling();
 }
+
+// Check straight away when the tab comes back into view.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  unread = 0;
+  updateTitle();
+  if (session) schedulePolling(0);
+});
 
 async function submitMove() {
   if (!pending || busy) return;
@@ -250,6 +301,7 @@ function render() {
   $('#clear-move').disabled = !pending || busy;
   document.querySelector('.actions').hidden = state.status !== 'active';
   $('#leave').textContent = state.status === 'active' ? 'Leave game' : 'Back to home';
+  updateChatEnabled();
 
   renderMeta();
 }
@@ -322,6 +374,97 @@ function renderBoard(myTurn) {
     boardEl.append(small);
   }
 }
+
+// ---------- chat ----------
+
+function updateTitle() {
+  document.title = unread ? `(${unread}) ${BASE_TITLE}` : BASE_TITLE;
+}
+
+// `list` is the server's full message list.
+function mergeChat(list) {
+  const known = chat.length ? chat[chat.length - 1].id : 0;
+  const fresh = list.filter((m) => m.id > known && m.from !== session.role);
+  chat = list;
+  if (fresh.length && document.hidden) {
+    unread += fresh.length;
+    updateTitle();
+  }
+  renderChat();
+}
+
+function renderChat() {
+  const log = $('#chat-log');
+  const nearBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+  const previousTop = log.scrollTop;
+
+  // Don't show a sent message twice while its confirmation is still on the way.
+  const lastId = chat.length ? chat[chat.length - 1].id : 0;
+  const waiting = outbox.filter((o) => !chat.some((m) => m.id > o.afterId && m.from === o.from && m.text === o.text));
+
+  log.innerHTML = '';
+  const all = [...chat, ...waiting];
+  if (!all.length) {
+    const empty = document.createElement('li');
+    empty.className = 'chat-empty';
+    empty.textContent = 'Say hi to your opponent.';
+    log.append(empty);
+  }
+  for (const m of all) {
+    const mine = session && m.from === session.role;
+    const li = document.createElement('li');
+    li.className = `msg from-${m.from}${mine ? ' mine' : ''}${m.pending ? ' sending' : ''}`;
+    const name = document.createElement('div');
+    name.className = 'msg-name';
+    name.textContent = state ? state.players[m.from].name : m.from;
+    const text = document.createElement('p');
+    text.className = 'msg-text';
+    text.textContent = m.text;
+    li.append(name, text);
+    log.append(li);
+  }
+  if (nearBottom || waiting.length || lastId === 0) log.scrollTop = log.scrollHeight;
+  else log.scrollTop = previousTop;
+
+  updateChatEnabled();
+}
+
+// Chat closes when the game ends.
+function updateChatEnabled() {
+  const open = Boolean(state && state.status === 'active');
+  $('#chat-input').disabled = !open;
+  $('#chat-input').placeholder = open ? 'Message…' : 'Game over';
+  $('#chat-form button').disabled = !open;
+}
+
+$('#chat-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = $('#chat-input');
+  const text = input.value.trim();
+  if (!text || !session || state?.status !== 'active') return;
+  input.value = '';
+  $('#chat-error').textContent = '';
+
+  const local = {
+    id: `local-${++localId}`,
+    from: session.role,
+    text,
+    pending: true,
+    afterId: chat.length ? chat[chat.length - 1].id : 0,
+  };
+  outbox.push(local);
+  renderChat();
+  try {
+    const { chat: list } = await api.sendChat(session.code, session.token, text);
+    outbox = outbox.filter((m) => m !== local);
+    mergeChat(list);
+  } catch (err) {
+    outbox = outbox.filter((m) => m !== local);
+    input.value = text;
+    $('#chat-error').textContent = err.message;
+    renderChat();
+  }
+});
 
 // ---------- startup ----------
 

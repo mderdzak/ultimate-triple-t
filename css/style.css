@@ -328,3 +328,87 @@ body { padding-bottom: 64px; }
 @media (max-width: 400px) {
   .credit { font-size: 10px; }
 }
+
+/* ---------- Game layout with chat ---------- */
+
+/* The game screen is wider so the chat can sit beside the board. The board column
+   keeps the same width the board had before. */
+.app.in-game { max-width: 960px; }
+
+.game-layout { display: block; }
+.game-main { max-width: 528px; margin: 0 auto; }
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  max-width: 528px;
+  height: 340px;
+  margin: 24px auto 0;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+@media (min-width: 900px) {
+  .game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 528px) minmax(260px, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .game-main { margin: 0; }
+  .chat {
+    position: sticky;
+    top: 16px;
+    max-width: none;
+    height: min(620px, calc(100vh - 48px));
+    margin: 0;
+  }
+}
+
+.chat-title { margin: 0 0 8px; font-size: 16px; }
+
+.chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.chat-empty { margin: auto; color: var(--muted); font-size: 14px; text-align: center; }
+
+.msg { max-width: 85%; align-self: flex-start; }
+.msg.mine { align-self: flex-end; }
+.msg-name { font-size: 12px; color: var(--muted); margin: 0 6px 2px; }
+.msg.mine .msg-name { text-align: right; }
+.msg-text {
+  margin: 0;
+  padding: 7px 11px;
+  border-radius: 14px;
+  background: var(--bg);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.msg.from-X .msg-text { background: var(--x-soft); }
+.msg.from-O .msg-text { background: var(--o-soft); }
+.msg.sending { opacity: 0.55; }
+
+.chat .error { margin-top: 6px; }
+.chat-form { display: flex; gap: 8px; margin-top: 8px; }
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 8px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+}
+.chat-form input:focus { outline: none; border-color: var(--line-strong); }
+.chat-form input:disabled { opacity: 0.5; }

@@ -29,7 +29,9 @@ async function request(method, path, body) {
 }
 
 export const createGame = (hostName, guestName) => request('POST', '/games', { hostName, guestName });
-export const getGame = (code) => request('GET', `/games/${code}`);
+// `tag` is the `v` from the previous reply: if nothing changed, the reply is just { unchanged: true }.
+export const getGame = (code, tag) => request('GET', `/games/${code}${tag ? `?v=${encodeURIComponent(tag)}` : ''}`);
+export const sendChat = (code, token, text) => request('POST', `/games/${code}/chat`, { token, text });
 export const joinGame = (code) => request('POST', `/games/${code}/join`);
 export const sendMove = (code, token, board, cell) => request('POST', `/games/${code}/move`, { token, board, cell });
 export const deleteGame = (code, token) => request('DELETE', `/games/${code}`, { token });

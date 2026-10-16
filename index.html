@@ -66,6 +66,8 @@
 
     <!-- Game -->
     <section class="screen" id="screen-game" hidden>
+     <div class="game-layout">
+      <div class="game-main">
       <div class="share" id="share" hidden>
         <div>
           <div class="share-label">Send this code to <span id="share-name"></span></div>
@@ -94,6 +96,18 @@
         <span class="meta" id="meta"></span>
         <button class="btn btn-small btn-quiet" id="leave" type="button">Leave game</button>
       </div>
+      </div>
+
+      <aside class="chat" id="chat" aria-label="Chat">
+        <h2 class="chat-title">Chat</h2>
+        <ol class="chat-log" id="chat-log" aria-live="polite"></ol>
+        <p class="error" id="chat-error" role="alert"></p>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+          <input id="chat-input" maxlength="500" placeholder="Message…" aria-label="Chat message">
+          <button class="btn btn-primary btn-small" type="submit">Send</button>
+        </form>
+      </aside>
+     </div>
     </section>
 
     <details class="rules">
