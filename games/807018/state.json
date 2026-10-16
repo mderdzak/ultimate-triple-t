@@ -1,7 +1,7 @@
 {
   "code": "807018",
   "createdAt": "2026-10-16T15:35:43.378Z",
-  "updatedAt": "2026-10-16T15:37:29.115Z",
+  "updatedAt": "2026-10-16T15:37:35.025Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -65,7 +65,7 @@
       "X",
       null,
       null,
-      null,
+      "X",
       null
     ],
     [
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 4,
-  "turn": "X",
+  "nextBoard": 7,
+  "turn": "O",
   "moves": [
     {
       "player": "X",
@@ -156,6 +156,11 @@
       "player": "O",
       "board": 3,
       "cell": 4
+    },
+    {
+      "player": "X",
+      "board": 4,
+      "cell": 7
     }
   ],
   "status": "active",
