@@ -4,6 +4,7 @@ import * as api from './api.js';
 
 const SESSION_KEY = 'utt-session';
 const BASE_TITLE = document.title;
+const WIDE_LAYOUT = '(min-width: 1000px)'; // keep in sync with css/style.css
 
 // Current game, if any.
 let session = null;   // { code, token, role }
@@ -30,6 +31,8 @@ function show(name) {
     el.hidden = el.id !== `screen-${name}`;
   }
   document.querySelector('.app').classList.toggle('in-game', name === 'game');
+  // On wide screens the how-to sits open beside the board during a game.
+  if (name === 'game' && matchMedia(WIDE_LAYOUT).matches) document.querySelector('.rules').open = true;
 }
 
 function goHome() {

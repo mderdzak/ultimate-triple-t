@@ -412,3 +412,58 @@ body { padding-bottom: 64px; }
 }
 .chat-form input:focus { outline: none; border-color: var(--line-strong); }
 .chat-form input:disabled { opacity: 0.5; }
+
+/* ---------- Wide screens: how-to | board | chat, all on one screen ---------- */
+@media (min-width: 1000px) {
+  .app.in-game {
+    max-width: 1400px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-areas:
+      "head  head"
+      "rules game";
+    column-gap: 24px;
+    align-items: start;
+  }
+  .app.in-game .masthead { grid-area: head; }
+  .app.in-game #screen-game { grid-area: game; }
+  .app.in-game .rules {
+    grid-area: rules;
+    margin-top: 0;
+    max-height: calc(100vh - 170px);
+    overflow-y: auto;
+  }
+
+  .app.in-game .game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+    gap: 24px;
+    align-items: start;
+  }
+  .app.in-game .game-main { max-width: none; margin: 0; }
+
+  /* Size the board by the window height so nothing needs scrolling. */
+  .app.in-game .big-board {
+    width: min(100%, max(340px, calc(100vh - 380px)));
+    margin: 0 auto;
+  }
+  .app.in-game .share,
+  .app.in-game .actions,
+  .app.in-game .footer-row {
+    width: min(100%, max(340px, calc(100vh - 380px)));
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .app.in-game .chat {
+    position: sticky;
+    top: 16px;
+    max-width: none;
+    height: calc(100vh - 170px);
+    min-height: 360px;
+    margin: 0;
+    padding: 16px;
+  }
+  .app.in-game .chat-title { font-size: 18px; }
+  .app.in-game .chat-form input { padding: 11px 12px; font-size: 15px; }
+}
