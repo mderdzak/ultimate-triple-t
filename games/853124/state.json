@@ -1,7 +1,7 @@
 {
   "code": "853124",
   "createdAt": "2026-10-16T00:58:02.399Z",
-  "updatedAt": "2026-10-16T00:58:02.399Z",
+  "updatedAt": "2026-10-16T00:58:21.920Z",
   "players": {
     "X": {
       "name": "Desktop",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Mobile",
-      "tokenHash": null
+      "tokenHash": "d3d1d11b574695b00d5d5b771afc8e337ed0929b7b1bfd38565f6c3d2e4d1c56"
     }
   },
   "boards": [
