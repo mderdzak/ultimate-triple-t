@@ -1,7 +1,7 @@
 {
   "code": "643213",
   "createdAt": "2026-10-16T00:41:30.899Z",
-  "updatedAt": "2026-10-16T00:50:59.005Z",
+  "updatedAt": "2026-10-16T00:52:15.903Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -22,7 +22,7 @@
       null,
       null,
       null,
-      null
+      "O"
     ],
     [
       null,
@@ -124,13 +124,18 @@
     null,
     null
   ],
-  "nextBoard": 0,
-  "turn": "O",
+  "nextBoard": 8,
+  "turn": "X",
   "moves": [
     {
       "player": "X",
       "board": 0,
       "cell": 0
+    },
+    {
+      "player": "O",
+      "board": 0,
+      "cell": 8
     }
   ],
   "status": "active",
