@@ -1,5 +1,5 @@
 // Calls to the relay worker, which reads/writes the game folder on GitHub.
-import { RELAY_URL } from './config.js';
+import { RELAY_URL } from './config.js?v=7';
 
 export class ApiError extends Error {
   constructor(status, message) {

@@ -430,7 +430,7 @@ body { padding-bottom: 64px; }
   .app.in-game .rules {
     grid-area: rules;
     margin-top: 0;
-    max-height: calc(100vh - 170px);
+    max-height: calc(100vh - 150px);
     overflow-y: auto;
   }
 
@@ -443,14 +443,20 @@ body { padding-bottom: 64px; }
   .app.in-game .game-main { max-width: none; margin: 0; }
 
   /* Size the board by the window height so nothing needs scrolling. */
-  .app.in-game .big-board {
-    width: min(100%, max(340px, calc(100vh - 380px)));
-    margin: 0 auto;
-  }
+  .app.in-game { --board: min(100%, max(320px, calc(100vh - 400px))); }
+  /* The "send this code" box takes room until the opponent joins. */
+  .app.in-game:has(#share:not([hidden])) { --board: min(100%, max(300px, calc(100vh - 480px))); }
+  .app.in-game .masthead h1 { margin-bottom: 12px; }
+  .app.in-game .share { padding: 8px 14px; margin-bottom: 10px; }
+  .app.in-game .share-code { font-size: 24px; }
+  .app.in-game .status { margin-bottom: 10px; }
+  .app.in-game .actions { margin-top: 10px; }
+  .app.in-game .footer-row { margin-top: 10px; }
+  .app.in-game .big-board,
   .app.in-game .share,
   .app.in-game .actions,
   .app.in-game .footer-row {
-    width: min(100%, max(340px, calc(100vh - 380px)));
+    width: var(--board);
     margin-left: auto;
     margin-right: auto;
   }
@@ -459,7 +465,7 @@ body { padding-bottom: 64px; }
     position: sticky;
     top: 16px;
     max-width: none;
-    height: calc(100vh - 170px);
+    height: calc(100vh - 150px);
     min-height: 360px;
     margin: 0;
     padding: 16px;

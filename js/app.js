@@ -1,6 +1,6 @@
 import { playableBoards, isLegalMove, winningLine } from './game.js';
-import { POLL_INTERVAL_MS, HIDDEN_POLL_INTERVAL_MS } from './config.js';
-import * as api from './api.js';
+import { POLL_INTERVAL_MS, HIDDEN_POLL_INTERVAL_MS } from './config.js?v=7';
+import * as api from './api.js?v=7';
 
 const SESSION_KEY = 'utt-session';
 const BASE_TITLE = document.title;
