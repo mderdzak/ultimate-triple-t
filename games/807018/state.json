@@ -1,7 +1,7 @@
 {
   "code": "807018",
   "createdAt": "2026-10-16T15:35:43.378Z",
-  "updatedAt": "2026-10-16T15:36:08.193Z",
+  "updatedAt": "2026-10-16T15:36:13.562Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Arthur",
-      "tokenHash": null
+      "tokenHash": "269b01044323e8b9c8ea0b65635cc0a7eff0a2149d7d6539a7b9f2635c378a83"
     }
   },
   "boards": [
