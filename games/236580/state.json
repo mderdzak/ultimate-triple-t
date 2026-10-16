@@ -1,7 +1,7 @@
 {
   "code": "236580",
   "createdAt": "2026-10-16T21:01:37.949Z",
-  "updatedAt": "2026-10-16T21:01:37.949Z",
+  "updatedAt": "2026-10-16T21:01:46.346Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Nika",
-      "tokenHash": null
+      "tokenHash": "f3aa57a371a76244f458bac680626e8d64f7968fd25e58aab701f8a468751b91"
     }
   },
   "boards": [
