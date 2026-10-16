@@ -1,7 +1,7 @@
 {
   "code": "609910",
   "createdAt": "2026-10-16T16:11:00.143Z",
-  "updatedAt": "2026-10-16T16:11:00.143Z",
+  "updatedAt": "2026-10-16T16:11:10.421Z",
   "players": {
     "X": {
       "name": ",",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": ",",
-      "tokenHash": null
+      "tokenHash": "272b27595a62b25fef7c5e8a9d752e288019ec3de4a26af913d661313925c259"
     }
   },
   "boards": [
