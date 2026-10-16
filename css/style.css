@@ -444,6 +444,8 @@ body { padding-bottom: 64px; }
 
   /* Size the board by the window height so nothing needs scrolling. */
   .app.in-game { --board: min(100%, max(320px, calc(100vh - 400px))); }
+  /* The fixed credit/Feedback row already reserves the bottom of the window. */
+  .app.in-game { padding-bottom: 0; }
   /* The "send this code" box takes room until the opponent joins. */
   .app.in-game:has(#share:not([hidden])) { --board: min(100%, max(300px, calc(100vh - 480px))); }
   .app.in-game .masthead h1 { margin-bottom: 12px; }
