@@ -1,7 +1,7 @@
 {
   "code": "643213",
   "createdAt": "2026-10-16T00:41:30.899Z",
-  "updatedAt": "2026-10-16T00:41:30.899Z",
+  "updatedAt": "2026-10-16T00:49:39.402Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Idyn",
-      "tokenHash": null
+      "tokenHash": "8f28e67accafd71fd844b1638e58a7173be5e556507f30c0bf2d2be7bc7add97"
     }
   },
   "boards": [
