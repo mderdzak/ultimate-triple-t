@@ -1,7 +1,7 @@
 {
   "code": "412243",
   "createdAt": "2026-10-16T15:01:46.175Z",
-  "updatedAt": "2026-10-16T15:01:46.175Z",
+  "updatedAt": "2026-10-16T15:01:56.058Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Krish",
-      "tokenHash": null
+      "tokenHash": "05d1eb8ff854fa0aa68d5f9aecdffde9ce15b17ac3c73ed714a117fda4a2bb6f"
     }
   },
   "boards": [
