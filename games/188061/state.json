@@ -1,7 +1,7 @@
 {
   "code": "188061",
   "createdAt": "2026-10-16T00:42:20.338Z",
-  "updatedAt": "2026-10-16T00:42:20.338Z",
+  "updatedAt": "2026-10-16T00:42:21.718Z",
   "players": {
     "X": {
       "name": "Smoke",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Test",
-      "tokenHash": null
+      "tokenHash": "058ad80ded152a546d66b57315147860f72910b3411e3a4591dc7273dfe1b189"
     }
   },
   "boards": [
