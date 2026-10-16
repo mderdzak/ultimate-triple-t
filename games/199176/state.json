@@ -1,7 +1,7 @@
 {
   "code": "199176",
   "createdAt": "2026-10-16T00:09:15.802Z",
-  "updatedAt": "2026-10-16T00:18:30.740Z",
+  "updatedAt": "2026-10-16T00:19:08.446Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -94,7 +94,7 @@
       null,
       null,
       null,
-      null,
+      "O",
       null,
       null,
       null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 7,
-  "turn": "O",
+  "nextBoard": 3,
+  "turn": "X",
   "moves": [
     {
       "player": "X",
@@ -211,6 +211,11 @@
       "player": "X",
       "board": 3,
       "cell": 7
+    },
+    {
+      "player": "O",
+      "board": 7,
+      "cell": 3
     }
   ],
   "status": "active",
