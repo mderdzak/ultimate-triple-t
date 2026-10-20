@@ -17,10 +17,11 @@
 //   POST   /games/:code/join                           -> { token, role: 'O', state }
 //   POST   /games/:code/move   { token, board, cell }  -> { state }
 //   POST   /games/:code/chat   { token, text }         -> { chat }
-//   DELETE /games/:code        { token }               -> { deleted: true }  (a player leaving)
+//   DELETE /games/:code        { token }               -> { deleted: true }  (a player leaving, or done)
 //
 // When does a game disappear?
-//   - a player leaves:   immediately
+//   - a player leaves:   they forfeit, so the opponent is shown a win; deleted PURGE_DELAY_MS later
+//                        (a game nobody has joined yet, or one that is already over, goes at once)
 //   - the game ends:     PURGE_DELAY_MS after the last move (the other player's page also
 //                        deletes it as soon as it has shown them the result)
 //   - a tab just closes: the cron below catches finished games within a minute, and
@@ -209,14 +210,39 @@ async function route(request, env, ctx) {
     throw new HttpError(409, 'Chat is busy, try sending again');
   }
 
-  // DELETE /games/:code — a player left, or has seen the result: delete the whole game
+  // DELETE /games/:code — a player leaves, or has seen the result
   if (parts.length === 2 && request.method === 'DELETE') {
     const body = await readJson(request);
-    const file = await gh.read(branch, STATE_FILE);
-    if (file) await roleForToken(file.data, body.token);
-    // If the game is already gone this still clears any chat branch it left behind.
-    await purgeGame(env, code);
-    return json({ deleted: true });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const file = await gh.read(branch, STATE_FILE);
+      if (!file) {
+        await purgeGame(env, code); // already gone; also clears any chat branch left behind
+        return json({ deleted: true });
+      }
+      const state = file.data;
+      const role = await roleForToken(state, body.token);
+
+      if (state.status === 'active' && state.players.O.tokenHash) {
+        // Leaving a game in progress is a forfeit: record the opponent's win so their page can
+        // show it, then delete everything shortly after (their page also deletes it as soon as
+        // it has shown them).
+        const winner = role === 'X' ? 'O' : 'X';
+        state.status = 'finished';
+        state.winner = winner;
+        state.forfeitedBy = role;
+        state.nextBoard = null;
+        state.updatedAt = new Date().toISOString();
+        const message = `Game ${code}: ${state.players[role].name} left, ${state.players[winner].name} wins`;
+        if (!(await gh.write(branch, STATE_FILE, state, file.sha, message))) continue; // changed meanwhile: re-read
+        if (ctx) ctx.waitUntil(purgeAfterDelay(env, code)); else await purgeGame(env, code);
+        return json({ deleted: true });
+      }
+
+      // Nobody has joined yet, or the game is already over: nothing to forfeit.
+      await purgeGame(env, code);
+      return json({ deleted: true });
+    }
+    throw new HttpError(409, 'The game changed at the same time, try again');
   }
 
   throw new HttpError(404, 'Not found');

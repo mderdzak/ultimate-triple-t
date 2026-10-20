@@ -14,7 +14,8 @@ Play Ultimate Tic Tac Toe with a friend in the browser. One player starts a game
 - **Join game:** the second player enters the code and plays O.
 - **Submit move:** the worker checks the move against the rules in `js/game.js` and commits the new board.
 - **Waiting:** the waiting player's page checks for the opponent's move every couple of seconds.
-- **Nothing is kept:** when a player leaves, both branches are deleted right away. When a game ends they are deleted 10 seconds after the last move (or sooner, as soon as the other player's page has shown them the result). A cleanup that runs every minute catches finished games nobody deleted, and abandoned games are removed after 7 days.
+- **Leaving:** a player who leaves a game in progress forfeits, and the other player is shown the win.
+- **Nothing is kept:** when a game ends, by a final move or by a player leaving, both branches are deleted 10 seconds later (or sooner, as soon as the other player's page has shown them the result). A cleanup that runs every minute catches finished games nobody deleted, and abandoned games are removed after 7 days.
 
 Each game gets its own branches, with no shared history, because deleting a branch is what makes deletion stick. Deleting a *file* from a shared branch would leave it readable in the commit history.
 

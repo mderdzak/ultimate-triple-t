@@ -13,7 +13,7 @@
       document.documentElement.dataset.theme = t;
     })();
   </script>
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
 </head>
 <body>
   <main class="app">
@@ -102,6 +102,7 @@
         <h2 class="chat-title">Chat</h2>
         <ol class="chat-log" id="chat-log" aria-live="polite"></ol>
         <p class="error" id="chat-error" role="alert"></p>
+        <p class="chat-note" id="chat-links" hidden></p>
         <form class="chat-form" id="chat-form" autocomplete="off">
           <input id="chat-input" maxlength="500" placeholder="Message…" aria-label="Chat message">
           <button class="btn btn-primary btn-small" type="submit">Send</button>
@@ -154,6 +155,6 @@
     })();
   </script>
 
-  <script type="module" src="js/app.js?v=10"></script>
+  <script type="module" src="js/app.js?v=11"></script>
 </body>
 </html>
