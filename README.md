@@ -7,19 +7,23 @@ Play Ultimate Tic Tac Toe with a friend in the browser. One player starts a game
 ## How it works
 
 ```
- browser ──► relay worker (Cloudflare, holds the GitHub token) ──► this repo, branch game-data
-                                                                     games/<code>/state.json
+ browser ──► relay worker (Cloudflare, holds the GitHub token) ──► this repo, two short-lived branches per game
 ```
 
-- **Start game:** creates `games/<code>/state.json` on the `game-data` branch. The host plays X and moves first.
+- **Start game:** creates two branches for the game: `game-<code>` (file `state.json`: the board, every move and the player names) and `chat-<code>` (file `chat.json`: the chat). The host plays X and moves first.
 - **Join game:** the second player enters the code and plays O.
 - **Submit move:** the worker checks the move against the rules in `js/game.js` and commits the new board.
-- **Waiting:** the waiting player's page checks for the opponent's move every 5 seconds.
-- **Game over:** the chat is deleted as soon as the game ends, and the board once the second player sees the result. A cleanup every 10 minutes removes finished games left behind after 10 minutes, and abandoned ones after 7 days.
-- **Leaving:** a player who leaves mid-game deletes the board and chat for both players.
-- **History:** deleted files are gone from the branches, but earlier versions stay in the repo's commit history while the repo is public.
+- **Waiting:** the waiting player's page checks for the opponent's move every couple of seconds.
+- **Nothing is kept:** when a player leaves, both branches are deleted right away. When a game ends they are deleted 10 seconds after the last move (or sooner, as soon as the other player's page has shown them the result). A cleanup that runs every minute catches finished games nobody deleted, and abandoned games are removed after 7 days.
 
-Game folders live on the separate `game-data` branch so that each move doesn't trigger a GitHub Pages rebuild of the site on `main`.
+Each game gets its own branches, with no shared history, because deleting a branch is what makes deletion stick. Deleting a *file* from a shared branch would leave it readable in the commit history.
+
+**To look at a game's data** while it's in progress (the code is on the page's footer, "Game 123456"):
+- board and moves: `https://github.com/<you>/ultimate-triple-t/blob/game-123456/state.json`
+- chat: `https://github.com/<you>/ultimate-triple-t/blob/chat-123456/chat.json`
+- everything live right now: `https://github.com/<you>/ultimate-triple-t/branches/all?query=game-` (and `chat-`)
+
+Once a game is over those pages return 404. GitHub may keep a deleted branch's commits retrievable by their exact commit hash for a while; that is only a concern if the repo is public.
 
 The site can't hold a GitHub token itself, because anyone could read it from the page. That's why a small worker sits in the middle.
 
