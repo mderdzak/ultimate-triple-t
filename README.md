@@ -8,7 +8,6 @@ Play Ultimate Tic Tac Toe with a friend in the browser. One player starts a game
 
 ```
  browser ──► relay worker (Cloudflare, holds the GitHub token) ──► this repo, two short-lived branches per game
-                                                                     games/<code>/state.json
 ```
 
 - **Start game:** creates two branches for the game: `game-<code>` (file `state.json`: the board, every move and the player names) and `chat-<code>` (file `chat.json`: the chat). The host plays X and moves first.
