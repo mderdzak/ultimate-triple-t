@@ -4,14 +4,12 @@ compatibility_date = "2025-06-01"
 
 [vars]
 GITHUB_REPO = "mderdzak/ultimate-triple-t"
-GITHUB_BRANCH = "game-data"
-GITHUB_CHAT_BRANCH = "game-chat"
 # localhost is always allowed; add other site origins here, comma separated
 ALLOWED_ORIGINS = "https://mderdzak.github.io"
 
-# Cleanup every 10 minutes of finished or abandoned games
+# Every minute: delete finished games the page did not delete, and abandoned ones
 [triggers]
-crons = ["*/10 * * * *"]
+crons = ["* * * * *"]
 
 # The GitHub token is a secret, never put it in this file:
 #   npx wrangler secret put GITHUB_TOKEN
