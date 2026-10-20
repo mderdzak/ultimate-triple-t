@@ -1,3 +1,4 @@
+# Deployed automatically by Cloudflare (Workers Builds) whenever main changes.
 name = "ultimate-triple-t"
 main = "src/index.js"
 compatibility_date = "2025-06-01"
