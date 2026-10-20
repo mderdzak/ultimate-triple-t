@@ -113,7 +113,8 @@ for (const b of document.querySelectorAll('[data-back]')) b.addEventListener('cl
 
 $('#leave').addEventListener('click', () => {
   if (state?.status === 'active') {
-    if (!confirm('Leave this game? It will be deleted for both players, along with the chat.')) return;
+    const forfeit = state.players.O.joined ? ' You will forfeit and your opponent wins.' : '';
+    if (!confirm(`Leave this game?${forfeit} The game and chat are deleted.`)) return;
     api.deleteGame(session.code, session.token).catch(() => {});
   }
   goHome();
@@ -316,8 +317,12 @@ function render() {
 
 function statusText(me, them, myTurn) {
   const themName = state.players[them].name;
-  if (state.status === 'gone') return `${themName} left, so the game and chat were deleted.`;
+  if (state.status === 'gone') return `${themName} left the game, so you win. The game and chat were deleted.`;
   if (state.status === 'finished') {
+    if (state.forfeitedBy) {
+      const left = state.players[state.forfeitedBy].name;
+      return state.forfeitedBy === me ? 'You left the game, so you lose.' : `${left} left the game, so you win! 🎉`;
+    }
     if (state.winner === 'draw') return "It's a draw. No moves left.";
     return state.winner === me ? 'You win! 🎉' : `${state.players[state.winner].name} wins.`;
   }
@@ -455,6 +460,11 @@ $('#chat-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const input = $('#chat-input');
   const text = input.value.trim();
+  if (text.toUpperCase() === SECRET_PHRASE) {
+    input.value = '';
+    openRepoLinks();
+    return;
+  }
   if (!text || !session || state?.status !== 'active') return;
   input.value = '';
   $('#chat-error').textContent = '';
@@ -479,6 +489,39 @@ $('#chat-form').addEventListener('submit', async (e) => {
     renderChat();
   }
 });
+
+// Typing the phrase into the chat box opens the GitHub pages that list every live game and
+// chat (nothing is sent to the opponent). It only opens public links.
+const SECRET_PHRASE = 'SHOW ME EVERYTHING';
+const REPO_URL = 'https://github.com/mderdzak/ultimate-triple-t';
+const REPO_LINKS = [
+  ['All branches', `${REPO_URL}/branches/all`],
+  ['Games', `${REPO_URL}/branches/all?query=game-`],
+  ['Chats', `${REPO_URL}/branches/all?query=chat-`],
+];
+
+function openRepoLinks() {
+  const box = $('#chat-links');
+  box.textContent = '';
+  // Browsers often only allow one new tab per click, so offer links for any that were blocked.
+  const blocked = REPO_LINKS.filter(([, url]) => {
+    const w = window.open(url, '_blank');
+    if (w) w.opener = null;
+    return !w;
+  });
+  if (!blocked.length) { box.hidden = true; return; }
+  box.append('Your browser blocked some tabs: ');
+  blocked.forEach(([label, url], i) => {
+    if (i) box.append(' · ');
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = label;
+    box.append(a);
+  });
+  box.hidden = false;
+}
 
 // ---------- startup ----------
 
