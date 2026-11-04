@@ -1,7 +1,7 @@
 {
   "code": "137283",
   "createdAt": "2026-11-04T17:56:59.075Z",
-  "updatedAt": "2026-11-04T17:56:59.075Z",
+  "updatedAt": "2026-11-04T17:57:44.269Z",
   "players": {
     "X": {
       "name": "Michael",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Ilan",
-      "tokenHash": null
+      "tokenHash": "f01eb29ccbdaf6fa93ce1a57afd5e7d206a4d7af36b2408af2270db338ef4649"
     }
   },
   "boards": [
