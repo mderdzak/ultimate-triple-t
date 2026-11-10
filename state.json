@@ -1,7 +1,7 @@
 {
   "code": "427884",
   "createdAt": "2026-11-10T15:51:33.904Z",
-  "updatedAt": "2026-11-10T15:54:19.091Z",
+  "updatedAt": "2026-11-10T15:54:48.755Z",
   "players": {
     "X": {
       "name": "Arman Derdzakyan",
@@ -18,7 +18,7 @@
       null,
       null,
       "O",
-      null,
+      "O",
       null,
       "X",
       null,
@@ -124,8 +124,8 @@
     null,
     null
   ],
-  "nextBoard": 0,
-  "turn": "O",
+  "nextBoard": 4,
+  "turn": "X",
   "moves": [
     {
       "player": "X",
@@ -161,6 +161,11 @@
       "player": "X",
       "board": 6,
       "cell": 0
+    },
+    {
+      "player": "O",
+      "board": 0,
+      "cell": 4
     }
   ],
   "status": "active",
