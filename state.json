@@ -1,7 +1,7 @@
 {
   "code": "427884",
   "createdAt": "2026-11-10T15:51:33.904Z",
-  "updatedAt": "2026-11-10T15:51:33.904Z",
+  "updatedAt": "2026-11-10T15:52:00.978Z",
   "players": {
     "X": {
       "name": "Arman Derdzakyan",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Son",
-      "tokenHash": null
+      "tokenHash": "7372b51ff71a0d8451203d90aa409691c224481b2312e588e490ec78bcc212cd"
     }
   },
   "boards": [
