@@ -1,7 +1,7 @@
 {
   "code": "233890",
   "createdAt": "2026-11-16T18:30:44.087Z",
-  "updatedAt": "2026-11-16T18:30:44.087Z",
+  "updatedAt": "2026-11-16T18:30:56.784Z",
   "players": {
     "X": {
       "name": "Arman Derdzakyan",
@@ -9,7 +9,7 @@
     },
     "O": {
       "name": "Betaji",
-      "tokenHash": null
+      "tokenHash": "227a88d462980f03ed2777bc74002c3fb72b33ed6794baba89e8ce9c13eb012c"
     }
   },
   "boards": [
